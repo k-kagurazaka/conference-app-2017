@@ -2,8 +2,9 @@ import com.android.ddmlib.DdmPreferences
 
 apply plugin: 'jacoco'
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.cookpad.android.licensetools'
 apply plugin: 'com.github.ben-manes.versions'
 
@@ -55,6 +56,7 @@ android {
         DdmPreferences.setTimeOut(60000)
 
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true // TODO remove later
     }
 
     packagingOptions {
@@ -163,12 +165,23 @@ android {
 configurations {
     all {
         resolutionStrategy {
+            force "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+            force "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
             force "com.android.support:support-annotations:${support_lib_version}"
         }
     }
 }
 
 dependencies {
+    // Multidex
+    compile 'com.android.support:multidex:1.0.1' // TODO remove later
+
+    // Kotlin
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.14'
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.14'
+
     // Support Library
     compile "com.android.support:support-v4:${support_lib_version}"
     compile "com.android.support:appcompat-v7:${support_lib_version}"
@@ -180,6 +193,9 @@ dependencies {
     compile "com.android.support:support-vector-drawable:${support_lib_version}"
     compile "com.android.support:animated-vector-drawable:${support_lib_version}"
     compile 'com.android.support.constraint:constraint-layout:1.0.1'
+
+    // Data Binding
+    kapt 'com.android.databinding:compiler:2.3.0'
 
     // Firebase(analytics, crash report)
     compile 'com.google.firebase:firebase-core:10.0.1'
@@ -194,7 +210,7 @@ dependencies {
 
     // Structure
     compile 'com.google.dagger:dagger:2.9'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.9'
+    kapt 'com.google.dagger:dagger-compiler:2.9'
     provided 'javax.annotation:jsr250-api:1.0'
     compile 'io.reactivex.rxjava2:rxjava:2.0.5'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
@@ -208,12 +224,12 @@ dependencies {
     debugCompile 'com.facebook.stetho:stetho-okhttp3:1.4.2'
     debugCompile 'com.facebook.stetho:stetho-timber:1.4.2@aar'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    annotationProcessor 'com.github.gfx.android.orma:orma-processor:4.2.0'
+    kapt 'com.github.gfx.android.orma:orma-processor:4.2.0'
     compile 'com.github.gfx.android.orma:orma:4.2.0'
     compile 'com.rejasupotaro:kvs-schema:5.0.1'
-    annotationProcessor 'com.rejasupotaro:kvs-schema-compiler:5.0.1'
+    kapt 'com.rejasupotaro:kvs-schema-compiler:5.0.1'
     compile 'com.github.sys1yagi.fragment-creator:library:0.8.2'
-    annotationProcessor 'com.github.sys1yagi.fragment-creator:processor:0.8.2'
+    kapt 'com.github.sys1yagi.fragment-creator:processor:0.8.2'
 
     // UI
     compile 'org.lucasr.twowayview:core:1.0.0-SNAPSHOT@aar'
@@ -235,19 +251,19 @@ dependencies {
     // Test
     testCompile 'junit:junit:4.12'
     testCompile "org.robolectric:robolectric:3.2.2"
+    testCompile "org.robolectric:shadows-multidex:3.2.2" // TODO remove later
     testCompile 'com.squareup.assertj:assertj-android:1.1.1'
     testCompile 'org.mockito:mockito-core:2.7.0'
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testCompile 'com.taroid.knit:knit:0.1.2'
+    testCompile 'com.github.sys1yagi:kmockito:0.1.2'
+
     androidTestCompile 'org.mockito:mockito-android:2.7.0'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
     androidTestCompile 'com.squareup.assertj:assertj-android:1.1.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
-    testCompile 'junit:junit:4.12'
-    testCompile "org.jetbrains.kotlin:kotlin-stdlib:1.1.1"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.1"
-    testCompile 'com.taroid.knit:knit:0.1.2'
-    testCompile 'com.github.sys1yagi:kmockito:0.1.2'
 }
 
 jacoco {
