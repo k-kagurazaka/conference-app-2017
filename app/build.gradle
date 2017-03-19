@@ -244,8 +244,8 @@ dependencies {
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
     testCompile 'junit:junit:4.12'
-    testCompile "org.jetbrains.kotlin:kotlin-stdlib:1.0.6"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.0.6"
+    testCompile "org.jetbrains.kotlin:kotlin-stdlib:1.1.1"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.1.1"
     testCompile 'com.taroid.knit:knit:0.1.2'
     testCompile 'com.github.sys1yagi:kmockito:0.1.2'
 }
