@@ -83,9 +83,9 @@ public class SessionFeedbackFragment extends BaseFragment implements SessionFeed
 
     @Override
     public void onSessionFeedbackInitialized(@NonNull SessionFeedback sessionFeedback) {
-        String title = sessionFeedback.isSubmitted
-                ? getString(R.string.session_feedback_submitted_title, sessionFeedback.sessionTitle)
-                : sessionFeedback.sessionTitle;
+        String title = sessionFeedback.isSubmitted()
+                ? getString(R.string.session_feedback_submitted_title, sessionFeedback.getSessionTitle())
+                : sessionFeedback.getSessionTitle();
         setActionBarTitle(title);
     }
 

@@ -23,7 +23,7 @@ public final class SponsorViewModel extends BaseObservable implements ViewModel 
     }
 
     public void onClickSponsor(@SuppressWarnings("UnusedParameters") View view) {
-        navigator.navigateToWebPage(sponsor.url);
+        navigator.navigateToWebPage(sponsor.getUrl());
     }
 
     public Sponsor getSponsor() {

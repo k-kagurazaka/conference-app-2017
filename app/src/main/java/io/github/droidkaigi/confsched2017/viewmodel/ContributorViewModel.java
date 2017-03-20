@@ -24,10 +24,10 @@ public class ContributorViewModel extends BaseObservable implements ViewModel {
     public ContributorViewModel(Navigator navigator, @NonNull Contributor contributor) {
         this.navigator = navigator;
         this.contributor = contributor;
-        this.avatarUrl = contributor.avatarUrl;
-        this.name = contributor.name;
-        this.htmlUrl = contributor.htmlUrl;
-        this.contributions = contributor.contributions;
+        this.avatarUrl = contributor.getAvatarUrl();
+        this.name = contributor.getName();
+        this.htmlUrl = contributor.getHtmlUrl();
+        this.contributions = contributor.getContributions();
     }
 
     @Override

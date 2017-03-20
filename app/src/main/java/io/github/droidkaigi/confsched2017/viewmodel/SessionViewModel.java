@@ -70,22 +70,22 @@ public class SessionViewModel extends BaseObservable implements ViewModel {
             MySessionsRepository mySessionsRepository) {
         this.session = session;
         this.navigator = navigator;
-        this.shortStime = DateUtil.getHourMinute(session.stime);
-        this.formattedDate = DateUtil.getMonthDate(session.stime, context);
-        this.title = session.title;
+        this.shortStime = DateUtil.getHourMinute(session.getStime());
+        this.formattedDate = DateUtil.getMonthDate(session.getStime(), context);
+        this.title = session.getTitle();
 
-        if (session.speaker != null) {
-            this.speakerName = session.speaker.name;
+        if (session.getSpeaker() != null) {
+            this.speakerName = session.getSpeaker().getName();
         }
-        if (session.room != null) {
-            this.roomName = session.room.name;
+        if (session.getRoom() != null) {
+            this.roomName = session.getRoom().getName();
         }
-        if (session.lang != null) {
-            this.languageId = session.lang.toUpperCase();
+        if (session.getLang() != null) {
+            this.languageId = session.getLang().toUpperCase();
         }
-        this.languageVisibility = session.lang != null ? View.VISIBLE : View.GONE;
+        this.languageVisibility = session.getLang() != null ? View.VISIBLE : View.GONE;
 
-        this.minutes = context.getString(R.string.session_minutes, session.durationMin);
+        this.minutes = context.getString(R.string.session_minutes, session.getDurationMin());
 
         decideRowSpan(session);
         this.colSpan = decideColSpan(session, roomCount);
@@ -99,7 +99,7 @@ public class SessionViewModel extends BaseObservable implements ViewModel {
         } else {
             this.isClickable = true;
             this.backgroundResId = session.isLiveAt(new Date()) ? R.drawable.clickable_purple : R.drawable.clickable_white;
-            this.topicColorResId = TopicColor.from(session.topic).middleColorResId;
+            this.topicColorResId = TopicColor.from(session.getTopic()).middleColorResId;
         }
 
         this.normalSessionItemVisibility = (!session.isBreak() && !session.isDinner()) ? View.VISIBLE : View.GONE;
@@ -137,7 +137,7 @@ public class SessionViewModel extends BaseObservable implements ViewModel {
 
     private void decideRowSpan(@NonNull Session session) {
         // Break time is over 30 min, but one row is good
-        if (session.durationMin > 30 && !session.isBreak()) {
+        if (session.getDurationMin() > 30 && !session.isBreak()) {
             this.rowSpan = this.rowSpan * 2;
             this.titleMaxLines = this.titleMaxLines * 2;
             this.speakerNameMaxLines = this.speakerNameMaxLines * 3;
@@ -145,7 +145,7 @@ public class SessionViewModel extends BaseObservable implements ViewModel {
     }
 
     Date getStime() {
-        return session.stime;
+        return session.getStime();
     }
 
     public void showSessionDetail(@SuppressWarnings("unused") View view) {
@@ -159,7 +159,7 @@ public class SessionViewModel extends BaseObservable implements ViewModel {
             return false;
         }
 
-        if (mySessionsRepository.isExist(session.id)) {
+        if (mySessionsRepository.isExist(session.getId())) {
             mySessionsRepository.delete(session)
                     .subscribe((result) -> {
                                 setCheckVisibility(View.GONE);

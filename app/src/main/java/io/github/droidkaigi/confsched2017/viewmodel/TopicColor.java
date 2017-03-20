@@ -62,12 +62,12 @@ enum TopicColor {
         if (topic == null) {
             return NONE;
         }
-        if (topic.id < 0) {
+        if (topic.getId() < 0) {
             return NONE;
         }
-        if (topic.id >= TopicColor.values().length) {
+        if (topic.getId() >= TopicColor.values().length) {
             return NONE;
         }
-        return TopicColor.values()[topic.id];
+        return TopicColor.values()[topic.getId()];
     }
 }

@@ -41,15 +41,17 @@ class ContributorsLocalDataSourceTest {
     @Test
     fun findAllWhenNotEmpty() {
         ormaDatabase.apply {
-            insertIntoContributor(Contributor().apply {
-                name = "Alice"
-            })
+            insertIntoContributor(Contributor(
+                    name = "Alice",
+                    contributions = 10
+            ))
         }.let(::ContributorsLocalDataSource).findAll().test().run {
             await(10, TimeUnit.SECONDS).should be true
             assertNoErrors()
             assertValueCount(1)
             values()[0].size.should be 1
             values()[0][0].name.should be "Alice"
+            values()[0][0].contributions.should be 10
         }
     }
 
@@ -57,12 +59,14 @@ class ContributorsLocalDataSourceTest {
     @Ignore("unstable test :(")
     fun updateAllAsyncAsInsert() {
         ContributorsLocalDataSource(ormaDatabase).updateAllAsync(listOf(
-                Contributor().apply {
-                    name = "Alice"
-                },
-                Contributor().apply {
-                    name = "Bob"
-                }))
+                Contributor(
+                        name = "Alice",
+                        contributions = 10
+                ),
+                Contributor(
+                        name = "Bob",
+                        contributions = 20
+                )))
         schedulerRule.testScheduler.triggerActions()
 
         ormaDatabase.selectFromContributor().toList().run {
@@ -75,15 +79,15 @@ class ContributorsLocalDataSourceTest {
     @Test
     fun updateAllAsyncAsUpdate() {
         ormaDatabase.apply {
-            insertIntoContributor(Contributor().apply {
-                name = "Alice"
-                contributions = 10
-            })
+            insertIntoContributor(Contributor(
+                    name = "Alice",
+                    contributions = 10
+            ))
         }.let(::ContributorsLocalDataSource).updateAllAsync(listOf(
-                Contributor().apply {
-                    name = "Alice"
-                    contributions = 100
-                }
+                Contributor(
+                        name = "Alice",
+                        contributions = 100
+                )
         ))
         schedulerRule.testScheduler.triggerActions()
 

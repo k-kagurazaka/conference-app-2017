@@ -51,12 +51,12 @@ public class DroidKaigiClient {
     }
 
     public Single<Response<Void>> submitSessionFeedback(@NonNull SessionFeedback sessionFeedback) {
-        return googleFormService.submitSessionFeedback(sessionFeedback.sessionId,
-                sessionFeedback.sessionTitle,
-                sessionFeedback.relevancy,
-                sessionFeedback.asExpected,
-                sessionFeedback.difficulty,
-                sessionFeedback.knowledgeable,
-                sessionFeedback.comment);
+        return googleFormService.submitSessionFeedback(sessionFeedback.getSessionId(),
+                sessionFeedback.getSessionTitle(),
+                sessionFeedback.getRelevancy(),
+                sessionFeedback.getAsExpected(),
+                sessionFeedback.getDifficulty(),
+                sessionFeedback.getKnowledgeable(),
+                sessionFeedback.getComment());
     }
 }

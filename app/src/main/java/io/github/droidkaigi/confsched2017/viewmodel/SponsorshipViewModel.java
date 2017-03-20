@@ -24,7 +24,7 @@ public final class SponsorshipViewModel extends BaseObservable implements ViewMo
     SponsorshipViewModel(Navigator navigator, Sponsorship sponsorship) {
         this.navigator = navigator;
         this.sponsorship = sponsorship;
-        this.category = sponsorship.category;
+        this.category = sponsorship.getCategory();
         this.sponsorViewModels = new ObservableArrayList<>();
         this.sponsorViewModels.addAll(convertSponsor(sponsorship));
     }
@@ -47,7 +47,7 @@ public final class SponsorshipViewModel extends BaseObservable implements ViewMo
     }
 
     private List<SponsorViewModel> convertSponsor(Sponsorship sponsorship) {
-        return Stream.of(sponsorship.sponsors)
+        return Stream.of(sponsorship.getSponsors())
                 .map(sponsor -> new SponsorViewModel(navigator, sponsor))
                 .toList();
     }

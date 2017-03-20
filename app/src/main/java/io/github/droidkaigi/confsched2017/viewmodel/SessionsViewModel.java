@@ -58,7 +58,7 @@ public class SessionsViewModel extends BaseObservable implements ViewModel {
                 (sessions, mySessions) -> {
                     final Map<Integer, MySession> mySessionMap = new LinkedHashMap<>();
                     for (MySession mySession : mySessions) {
-                        mySessionMap.put(mySession.session.id, mySession);
+                        mySessionMap.put(mySession.getSession().getId(), mySession);
                     }
 
                     this.rooms = extractRooms(sessions);
@@ -68,7 +68,7 @@ public class SessionsViewModel extends BaseObservable implements ViewModel {
 
                     List<SessionViewModel> viewModels = Stream.of(sessions)
                             .map(session -> {
-                                boolean isMySession = mySessionMap.containsKey(session.id);
+                                boolean isMySession = mySessionMap.containsKey(session.getId());
                                 return new SessionViewModel(
                                         session, context, navigator, rooms.size(), isMySession, mySessionsRepository);
                             })
@@ -84,7 +84,7 @@ public class SessionsViewModel extends BaseObservable implements ViewModel {
             String roomName = viewModel.getRoomName();
             if (TextUtils.isEmpty(roomName)) {
                 // In the case of Welcome talk and lunch time, set dummy room
-                roomName = rooms.get(0).name;
+                roomName = rooms.get(0).getName();
             }
             sessionMap.put(generateStimeRoomKey(viewModel.getStime(), roomName), viewModel);
         }
@@ -102,7 +102,7 @@ public class SessionsViewModel extends BaseObservable implements ViewModel {
             int maxRowSpan = 1;
             for (int i = 0, size = rooms.size(); i < size; i++) {
                 Room room = rooms.get(i);
-                SessionViewModel viewModel = sessionMap.get(generateStimeRoomKey(stime, room.name));
+                SessionViewModel viewModel = sessionMap.get(generateStimeRoomKey(stime, room.getName()));
                 if (viewModel != null) {
                     if (!lastFormattedDate.equals(viewModel.getFormattedDate())) {
                         // Change the date
@@ -147,7 +147,7 @@ public class SessionsViewModel extends BaseObservable implements ViewModel {
 
     private List<Date> extractStimes(List<Session> sessions) {
         return Stream.of(sessions)
-                .map(session -> session.stime)
+                .map(session -> session.getStime())
                 .sorted()
                 .distinct()
                 .toList();
@@ -155,9 +155,9 @@ public class SessionsViewModel extends BaseObservable implements ViewModel {
 
     private List<Room> extractRooms(List<Session> sessions) {
         return Stream.of(sessions)
-                .map(session -> session.room)
-                .filter(room -> room != null && room.id != 0)
-                .sorted((lhs, rhs) -> lhs.name.compareTo(rhs.name))
+                .map(session -> session.getRoom())
+                .filter(room -> room != null && room.getId() != 0)
+                .sorted((lhs, rhs) -> lhs.getName().compareTo(rhs.getName()))
                 .distinct()
                 .toList();
     }

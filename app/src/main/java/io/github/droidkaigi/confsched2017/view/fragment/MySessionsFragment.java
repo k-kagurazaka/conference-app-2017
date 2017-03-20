@@ -101,7 +101,7 @@ public class MySessionsFragment extends BaseFragment {
         @Override
         public long getItemId(int position) {
             MySessionViewModel viewModel = getItem(position);
-            return viewModel.mySession.id;
+            return viewModel.mySession.getId();
         }
     }
 }

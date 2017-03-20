@@ -82,21 +82,21 @@ public final class SessionFeedbackViewModel extends BaseObservable implements Vi
 
     private void initSessionFeedback(Session session) {
         this.session = session;
-        this.sessionTitle = session.title;
+        this.sessionTitle = session.getTitle();
         notifyPropertyChanged(BR.sessionTitle);
 
-        this.sessionFeedback = sessionFeedbackRepository.findFromCache(session.id);
+        this.sessionFeedback = sessionFeedbackRepository.findFromCache(session.getId());
         if (sessionFeedback == null) {
-            sessionFeedback = new SessionFeedback(session, relevancy, asExpected, difficulty, knowledgeable, comment);
+            sessionFeedback = SessionFeedback.create(session, relevancy, asExpected, difficulty, knowledgeable, comment);
         }
 
-        setRelevancy(sessionFeedback.relevancy);
-        setAsExpected(sessionFeedback.asExpected);
-        setDifficulty(sessionFeedback.difficulty);
-        setKnowledgeable(sessionFeedback.knowledgeable);
-        setComment(sessionFeedback.comment);
+        setRelevancy(sessionFeedback.getRelevancy());
+        setAsExpected(sessionFeedback.getAsExpected());
+        setDifficulty(sessionFeedback.getDifficulty());
+        setKnowledgeable(sessionFeedback.getKnowledgeable());
+        setComment(sessionFeedback.getComment());
 
-        setSubmitButtonEnabled(!sessionFeedback.isSubmitted);
+        setSubmitButtonEnabled(!sessionFeedback.isSubmitted());
 
         if (callback != null) {
             callback.onSessionFeedbackInitialized(sessionFeedback);
@@ -151,7 +151,7 @@ public final class SessionFeedbackViewModel extends BaseObservable implements Vi
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(success -> {
                     setLoadingVisibility(View.GONE);
-                    sessionFeedback.isSubmitted = true;
+                    sessionFeedback.setSubmitted(true);
                     if (callback != null) {
                         callback.onSuccessSubmit();
                     }
@@ -171,8 +171,8 @@ public final class SessionFeedbackViewModel extends BaseObservable implements Vi
 
     public void setRelevancy(int relevancy) {
         this.relevancy = relevancy;
-        if (sessionFeedback.relevancy != relevancy) {
-            sessionFeedback.relevancy = relevancy;
+        if (sessionFeedback.getRelevancy() != relevancy) {
+            sessionFeedback.setRelevancy(relevancy);
         }
         notifyPropertyChanged(BR.relevancy);
     }
@@ -184,8 +184,8 @@ public final class SessionFeedbackViewModel extends BaseObservable implements Vi
 
     public void setAsExpected(int asExpected) {
         this.asExpected = asExpected;
-        if (sessionFeedback.asExpected != asExpected) {
-            sessionFeedback.asExpected = asExpected;
+        if (sessionFeedback.getAsExpected() != asExpected) {
+            sessionFeedback.setAsExpected(asExpected);
         }
         notifyPropertyChanged(BR.asExpected);
     }
@@ -197,8 +197,8 @@ public final class SessionFeedbackViewModel extends BaseObservable implements Vi
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
-        if (sessionFeedback.difficulty != difficulty) {
-            sessionFeedback.difficulty = difficulty;
+        if (sessionFeedback.getDifficulty() != difficulty) {
+            sessionFeedback.setDifficulty(difficulty);
         }
         notifyPropertyChanged(BR.difficulty);
     }
@@ -210,8 +210,8 @@ public final class SessionFeedbackViewModel extends BaseObservable implements Vi
 
     public void setKnowledgeable(int knowledgeable) {
         this.knowledgeable = knowledgeable;
-        if (sessionFeedback.knowledgeable != knowledgeable) {
-            sessionFeedback.knowledgeable = knowledgeable;
+        if (sessionFeedback.getKnowledgeable() != knowledgeable) {
+            sessionFeedback.setKnowledgeable(knowledgeable);
         }
         notifyPropertyChanged(BR.knowledgeable);
     }
@@ -223,8 +223,8 @@ public final class SessionFeedbackViewModel extends BaseObservable implements Vi
 
     public void setComment(String comment) {
         this.comment = comment;
-        if (comment != null && !comment.equals(sessionFeedback.comment)) {
-            sessionFeedback.comment = comment;
+        if (comment != null && !comment.equals(sessionFeedback.getComment())) {
+            sessionFeedback.setComment(comment);
         }
         notifyPropertyChanged(BR.comment);
     }

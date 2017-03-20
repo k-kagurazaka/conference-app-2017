@@ -105,7 +105,7 @@ public class SessionsRepository implements SessionsDataSource {
         }
         cachedSessions.clear();
         for (Session session : sessions) {
-            cachedSessions.put(session.id, session);
+            cachedSessions.put(session.getId(), session);
         }
         isDirty = false;
     }

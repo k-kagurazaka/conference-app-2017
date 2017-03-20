@@ -182,7 +182,7 @@ public class DataBindingHelper {
     public static void setTopic(TextView textView, @Nullable Topic topic) {
         if (topic != null) {
             textView.setBackgroundResource(R.drawable.tag_language);
-            textView.setText(topic.name);
+            textView.setText(topic.getName());
         } else {
             textView.setVisibility(View.INVISIBLE);
         }

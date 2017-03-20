@@ -41,13 +41,13 @@ public class MySessionsRepository implements MySessionsDataSource {
 
     @Override
     public Completable save(@NonNull Session session) {
-        cachedMySessions.put(session.id, new MySession(session));
+        cachedMySessions.put(session.getId(), new MySession(0, session)); // TODO remove 0
         return localDataSource.save(session);
     }
 
     @Override
     public Single<Integer> delete(@NonNull Session session) {
-        cachedMySessions.remove(session.id);
+        cachedMySessions.remove(session.getId());
         return localDataSource.delete(session);
     }
 
@@ -62,7 +62,7 @@ public class MySessionsRepository implements MySessionsDataSource {
         }
         cachedMySessions.clear();
         for (MySession mySession : mySessions) {
-            cachedMySessions.put(mySession.session.id, mySession);
+            cachedMySessions.put(mySession.getSession().getId(), mySession);
         }
     }
 }

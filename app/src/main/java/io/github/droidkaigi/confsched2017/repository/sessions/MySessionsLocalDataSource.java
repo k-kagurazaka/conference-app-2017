@@ -46,8 +46,8 @@ public class MySessionsLocalDataSource implements MySessionsDataSource {
     @Override
     public Completable save(@NonNull Session session) {
         return orma.transactionAsCompletable(() -> {
-            mySessionRelation().deleter().sessionEq(session.id).execute();
-            mySessionRelation().inserter().execute(new MySession(session));
+            mySessionRelation().deleter().sessionEq(session.getId()).execute();
+            mySessionRelation().inserter().execute(new MySession(0, session)); // TODO remove 0
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -55,7 +55,7 @@ public class MySessionsLocalDataSource implements MySessionsDataSource {
 
     @Override
     public Single<Integer> delete(@NonNull Session session) {
-        return mySessionRelation().deleter().sessionEq(session.id).executeAsSingle()
+        return mySessionRelation().deleter().sessionEq(session.getId()).executeAsSingle()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

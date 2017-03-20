@@ -47,16 +47,16 @@ public class SearchResultViewModel extends BaseObservable implements ViewModel {
             MySessionsRepository mySessionsRepository) {
         this.navigator = navigator;
         this.text = text;
-        this.sessionTitle = session.title;
-        if (session.speaker != null) {
-            this.speakerImageUrl = session.speaker.imageUrl;
+        this.sessionTitle = session.getTitle();
+        if (session.getSpeaker() != null) {
+            this.speakerImageUrl = session.getSpeaker().getImageUrl();
         }
         this.type = type;
-        this.searchResultId = session.id * 10 + type.ordinal();
+        this.searchResultId = session.getId() * 10 + type.ordinal();
         this.shouldEllipsis = type == Type.DESCRIPTION;
         this.session = session;
         this.textAppearanceSpan = new TextAppearanceSpan(context, R.style.SearchResultAppearance);
-        this.isMySession = mySessionsRepository.isExist(session.id);
+        this.isMySession = mySessionsRepository.isExist(session.getId());
     }
 
     @Override
@@ -134,18 +134,18 @@ public class SearchResultViewModel extends BaseObservable implements ViewModel {
 
     static SearchResultViewModel createTitleType(@NonNull Session session, Context context, Navigator navigator,
             MySessionsRepository mySessionsRepository) {
-        return new SearchResultViewModel(session.title, Type.TITLE, session, context, navigator, mySessionsRepository);
+        return new SearchResultViewModel(session.getTitle(), Type.TITLE, session, context, navigator, mySessionsRepository);
     }
 
     static SearchResultViewModel createDescriptionType(@NonNull Session session, Context context, Navigator navigator,
             MySessionsRepository mySessionsRepository) {
-        return new SearchResultViewModel(session.desc, Type.DESCRIPTION, session, context, navigator, mySessionsRepository);
+        return new SearchResultViewModel(session.getDesc(), Type.DESCRIPTION, session, context, navigator, mySessionsRepository);
     }
 
     static SearchResultViewModel createSpeakerType(@NonNull Session session, Context context, Navigator navigator,
             MySessionsRepository mySessionsRepository) {
         return new SearchResultViewModel(
-                session.speaker.name, Type.SPEAKER, session, context, navigator, mySessionsRepository);
+                session.getSpeaker().getName(), Type.SPEAKER, session, context, navigator, mySessionsRepository);
     }
 
     public enum Type {

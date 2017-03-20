@@ -8,8 +8,8 @@ import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.Sponsor
 import io.github.droidkaigi.confsched2017.model.Sponsorship
 import io.github.droidkaigi.confsched2017.util.RxTestSchedulerRule
-import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
+import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
 import io.reactivex.disposables.CompositeDisposable
 import org.junit.After
 import org.junit.Before
@@ -25,25 +25,25 @@ class SponsorshipsViewModelTest {
         val schedulerRule = RxTestSchedulerRule
 
         private val EXPECTED_SPONSORSHIPS = listOf(
-                Sponsorship().apply {
-                    category = "Category A"
-                    sponsors = listOf(
-                            createDummySponsor("a"),
-                            createDummySponsor("b")
-                    )
-                },
-                Sponsorship().apply {
-                    category = "Category B"
-                    sponsors = listOf(
-                            createDummySponsor("c")
-                    )
-                }
+                Sponsorship(
+                        category = "Category A",
+                        sponsors = listOf(
+                                createDummySponsor("a"),
+                                createDummySponsor("b")
+                        )
+                ),
+                Sponsorship(
+                        category = "Category B",
+                        sponsors = listOf(
+                                createDummySponsor("c")
+                        )
+                )
         )
 
-        private fun createDummySponsor(name: String) = Sponsor().apply {
-            imageUrl = "imageUrl_$name"
-            url = "url_$name"
-        }
+        private fun createDummySponsor(name: String) = Sponsor(
+                imageUrl = "imageUrl_$name",
+                url = "url_$name"
+        )
     }
 
     private val resourceResolver = object : ResourceResolver(null) {

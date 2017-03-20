@@ -13,15 +13,18 @@ class ContributorsRepositoryTest {
 
     private companion object {
         val CONTRIBUTORS = listOf(
-                Contributor().apply {
-                    name = "Alice"
-                },
-                Contributor().apply {
-                    name = "Bob"
-                },
-                Contributor().apply {
-                    name = "Charlie"
-                }
+                Contributor(
+                        name = "Alice",
+                        contributions = 10
+                ),
+                Contributor(
+                        name = "Bob",
+                        contributions = 20
+                ),
+                Contributor(
+                        name = "Charlie",
+                        contributions = 30
+                )
         )
     }
 

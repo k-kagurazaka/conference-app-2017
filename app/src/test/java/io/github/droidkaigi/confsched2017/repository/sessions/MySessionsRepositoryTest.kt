@@ -4,7 +4,7 @@ import com.sys1yagi.kmockito.invoked
 import com.sys1yagi.kmockito.mock
 import com.sys1yagi.kmockito.verify
 import com.taroid.knit.should
-import io.github.droidkaigi.confsched2017.model.*
+import io.github.droidkaigi.confsched2017.model.MySession
 import io.github.droidkaigi.confsched2017.util.DummyCreator
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -48,10 +48,10 @@ class MySessionsRepositoryTest {
             assertComplete()
         }
 
-         // check if session is cached
+        // check if session is cached
         repository.findAll().test().run {
             assertNoErrors()
-            assertResult(listOf(MySession(session)))
+            assertResult(listOf(MySession(session = session)))
             assertComplete()
             localDataSource.verify(Mockito.never()).findAll()
         }
@@ -77,7 +77,7 @@ class MySessionsRepositoryTest {
         // check if cached session1 is deleted
         repository.findAll().test().run {
             assertNoErrors()
-            assertResult(listOf(MySession(session2)))
+            assertResult(listOf(MySession(session = session2)))
             assertComplete()
         }
     }

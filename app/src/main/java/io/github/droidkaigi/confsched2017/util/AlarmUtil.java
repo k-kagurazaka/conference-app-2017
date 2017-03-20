@@ -20,7 +20,7 @@ public class AlarmUtil {
     private static final long REMIND_DURATION_MINUTES_FOR_START = TimeUnit.MINUTES.toMillis(10);
 
     public static void registerAlarm(@NonNull Context context, @NonNull Session session) {
-        long time = session.stime.getTime() - REMIND_DURATION_MINUTES_FOR_START;
+        long time = session.getStime().getTime() - REMIND_DURATION_MINUTES_FOR_START;
 
         DefaultPrefs prefs = DefaultPrefs.get(context);
         if (prefs.getNotificationTestFlag()) {
@@ -43,19 +43,19 @@ public class AlarmUtil {
     }
 
     private static PendingIntent createAlarmIntent(@NonNull Context context, @NonNull Session session) {
-        String title = context.getString(R.string.notification_title, session.title);
-        Date displaySTime = LocaleUtil.getDisplayDate(session.stime, context);
-        Date displayETime = LocaleUtil.getDisplayDate(session.etime, context);
+        String title = context.getString(R.string.notification_title, session.getTitle());
+        Date displaySTime = LocaleUtil.getDisplayDate(session.getStime(), context);
+        Date displayETime = LocaleUtil.getDisplayDate(session.getEtime(), context);
         String room = "";
-        if (session.room != null) {
-            room = session.room.name;
+        if (session.getRoom() != null) {
+            room = session.getRoom().getName();
         }
         String text = context.getString(R.string.notification_message,
                 DateUtil.getHourMinute(displaySTime),
                 DateUtil.getHourMinute(displayETime),
                 room);
-        Intent intent = NotificationReceiver.createIntent(context, session.id, title, text);
-        return PendingIntent.getBroadcast(context, session.id,
+        Intent intent = NotificationReceiver.createIntent(context, session.getId(), title, text);
+        return PendingIntent.getBroadcast(context, session.getId(),
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

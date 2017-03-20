@@ -28,8 +28,8 @@ public final class SessionsRemoteDataSource implements SessionsDataSource {
                 .doOnSuccess(sessions -> {
                     // API returns some sessions which have empty room info.
                     for (Session session : sessions) {
-                        if (session.room != null && TextUtils.isEmpty(session.room.name)) {
-                            session.room = null;
+                        if (session.getRoom() != null && TextUtils.isEmpty(session.getRoom().getName())) {
+                            session.setRoom(null);
                         }
                     }
                 });
@@ -40,7 +40,7 @@ public final class SessionsRemoteDataSource implements SessionsDataSource {
         return findAll(locale)
                 .toObservable()
                 .flatMap(Observable::fromIterable)
-                .filter(session -> session.id == sessionId)
+                .filter(session -> session.getId() == sessionId)
                 .singleElement();
     }
 

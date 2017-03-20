@@ -86,25 +86,25 @@ public class SessionDetailViewModel extends BaseObservable implements ViewModel 
 
     private void setSession(@NonNull Session session) {
         this.session = session;
-        this.sessionTitle = session.title;
+        this.sessionTitle = session.getTitle();
 
-        if (session.speaker != null) {
-            this.speakerImageUrl = session.speaker.getAdjustedImageUrl();
+        if (session.getSpeaker() != null) {
+            this.speakerImageUrl = session.getSpeaker().getAdjustedImageUrl();
         }
-        TopicColor topicColor = TopicColor.from(session.topic);
+        TopicColor topicColor = TopicColor.from(session.getTopic());
         this.sessionVividColorResId = topicColor.vividColorResId;
         this.sessionPaleColorResId = topicColor.paleColorResId;
         this.sessionThemeResId = topicColor.themeId;
         this.sessionTimeRange = decideSessionTimeRange(context, session);
-        this.isMySession = mySessionsRepository.isExist(session.id);
+        this.isMySession = mySessionsRepository.isExist(session.getId());
         this.tagContainerVisibility = !session.isDinner() ? View.VISIBLE : View.GONE;
         this.speakerVisibility = !session.isDinner() ? View.VISIBLE : View.GONE;
-        this.slideIconVisibility = session.slideUrl != null ? View.VISIBLE : View.GONE;
-        this.dashVideoIconVisibility = session.movieUrl != null && session.movieDashUrl != null ? View.VISIBLE : View.GONE;
-        this.roomVisibility = session.room != null ? View.VISIBLE : View.GONE;
-        this.topicVisibility = session.topic != null ? View.VISIBLE : View.GONE;
+        this.slideIconVisibility = session.getSlideUrl() != null ? View.VISIBLE : View.GONE;
+        this.dashVideoIconVisibility = session.getMovieUrl() != null && session.getMovieDashUrl() != null ? View.VISIBLE : View.GONE;
+        this.roomVisibility = session.getRoom() != null ? View.VISIBLE : View.GONE;
+        this.topicVisibility = session.getTopic() != null ? View.VISIBLE : View.GONE;
         this.feedbackButtonVisiblity = !session.isDinner() ? View.VISIBLE : View.GONE;
-        this.languageResId = session.lang != null ? decideLanguageResId(new Locale(session.lang.toLowerCase()))
+        this.languageResId = session.getLang() != null ? decideLanguageResId(new Locale(session.getLang().toLowerCase()))
                 : R.string.lang_en;
     }
 
@@ -130,7 +130,7 @@ public class SessionDetailViewModel extends BaseObservable implements ViewModel 
     }
 
     public boolean shouldShowShareMenuItem() {
-        return !TextUtils.isEmpty(session.shareUrl);
+        return !TextUtils.isEmpty(session.getShareUrl());
     }
 
     public void onClickShareMenuItem() {
@@ -153,7 +153,7 @@ public class SessionDetailViewModel extends BaseObservable implements ViewModel 
 
     public void onClickFab(@SuppressWarnings("unused") View view) {
         boolean selected = true;
-        if (mySessionsRepository.isExist(session.id)) {
+        if (mySessionsRepository.isExist(session.getId())) {
             selected = false;
             mySessionsRepository.delete(session)
                     .subscribe((result) -> Timber.tag(TAG).d("Deleted my session"),
@@ -179,8 +179,8 @@ public class SessionDetailViewModel extends BaseObservable implements ViewModel 
     }
 
     private String decideSessionTimeRange(Context context, Session session) {
-        Date displaySTime = LocaleUtil.getDisplayDate(session.stime, context);
-        Date displayETime = LocaleUtil.getDisplayDate(session.etime, context);
+        Date displaySTime = LocaleUtil.getDisplayDate(session.getStime(), context);
+        Date displayETime = LocaleUtil.getDisplayDate(session.getEtime(), context);
 
         return context.getString(R.string.session_time_range,
                 DateUtil.getLongFormatDate(displaySTime),

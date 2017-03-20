@@ -8,8 +8,8 @@ import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.Contributor
 import io.github.droidkaigi.confsched2017.repository.contributors.ContributorsRepository
 import io.github.droidkaigi.confsched2017.util.RxTestSchedulerRule
-import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
+import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import org.junit.After
@@ -26,16 +26,19 @@ class ContributorsViewModelTest {
         val schedulerRule = RxTestSchedulerRule
 
         private val EXPECTED_CONTRIBUTORS = listOf(
-                Contributor().apply {
-                    name = "Alice"
-                    htmlUrl = "AliceUrl"
-                },
-                Contributor().apply {
-                    name = "Bob"
-                },
-                Contributor().apply {
-                    name = "Charlie"
-                }
+                Contributor(
+                        name = "Alice",
+                        htmlUrl = "AliceUrl",
+                        contributions = 10
+                ),
+                Contributor(
+                        name = "Bob",
+                        contributions = 20
+                ),
+                Contributor(
+                        name = "Charlie",
+                        contributions = 30
+                )
         )
     }
 

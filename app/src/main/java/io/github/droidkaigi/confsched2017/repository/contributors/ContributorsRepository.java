@@ -74,7 +74,7 @@ public class ContributorsRepository {
         }
         cachedContributors.clear();
         for (Contributor contributor : contributors) {
-            cachedContributors.put(contributor.name, contributor);
+            cachedContributors.put(contributor.getName(), contributor);
         }
         isDirty = false;
     }

@@ -224,7 +224,7 @@ public class SessionsFragment extends BaseFragment {
             for (Room room : rooms) {
                 View view = LayoutInflater.from(getContext()).inflate(R.layout.view_sessions_header_cell, null);
                 TextView txtRoomName = (TextView) view.findViewById(R.id.txt_room_name);
-                txtRoomName.setText(room.name);
+                txtRoomName.setText(room.getName());
                 LinearLayout.LayoutParams params =
                         new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
                 txtRoomName.setLayoutParams(params);

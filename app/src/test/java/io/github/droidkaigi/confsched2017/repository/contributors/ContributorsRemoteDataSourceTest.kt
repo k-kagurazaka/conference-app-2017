@@ -23,9 +23,10 @@ class ContributorsRemoteDataSourceTest {
     @Test
     fun findAll() {
         client.contributors.invoked.thenReturn(Single.just(listOf(
-                Contributor().apply {
-                    name = "Alice"
-                })))
+                Contributor(
+                        name = "Alice",
+                        contributions = 10
+                ))))
 
         ContributorsRemoteDataSource(client).findAll().test().run {
             schedulerRule.testScheduler.triggerActions()

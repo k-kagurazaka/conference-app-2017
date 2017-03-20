@@ -38,11 +38,11 @@ public class Navigator {
     }
 
     public void navigateToSessionDetail(@NonNull Session session, @Nullable Class<? extends Activity> parentClass) {
-        activity.startActivity(SessionDetailActivity.createIntent(activity, session.id, parentClass));
+        activity.startActivity(SessionDetailActivity.createIntent(activity, session.getId(), parentClass));
     }
 
     public void navigateToFeedbackPage(@NonNull Session session) {
-        activity.startActivity(SessionFeedbackActivity.createIntent(activity, session.id));
+        activity.startActivity(SessionFeedbackActivity.createIntent(activity, session.getId()));
     }
 
     public void navigateToSponsorsPage() {

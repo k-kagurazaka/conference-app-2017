@@ -30,14 +30,14 @@ public class MySessionViewModel extends BaseObservable implements ViewModel {
 
     public MySessionViewModel(Context context, Navigator navigator, MySession mySession) {
         this.navigator = navigator;
-        this.sessionTitle = mySession.session.title;
-        if (mySession.session.speaker != null) {
-            this.speakerImageUrl = mySession.session.speaker.getAdjustedImageUrl();
+        this.sessionTitle = mySession.getSession().getTitle();
+        if (mySession.getSession().getSpeaker() != null) {
+            this.speakerImageUrl = mySession.getSession().getSpeaker().getAdjustedImageUrl();
         }
         this.mySession = mySession;
-        this.roomVisibility = mySession.session.room != null ? View.VISIBLE : View.GONE;
+        this.roomVisibility = mySession.getSession().getRoom() != null ? View.VISIBLE : View.GONE;
 
-        this.sessionTimeRange = decideSessionTimeRange(context, mySession.session);
+        this.sessionTimeRange = decideSessionTimeRange(context, mySession.getSession());
     }
 
     @Override
@@ -62,8 +62,8 @@ public class MySessionViewModel extends BaseObservable implements ViewModel {
     }
 
     private String decideSessionTimeRange(Context context, Session session) {
-        Date displaySTime = LocaleUtil.getDisplayDate(session.stime, context);
-        Date displayETime = LocaleUtil.getDisplayDate(session.etime, context);
+        Date displaySTime = LocaleUtil.getDisplayDate(session.getStime(), context);
+        Date displayETime = LocaleUtil.getDisplayDate(session.getEtime(), context);
 
         return context.getString(R.string.session_time_range,
                 DateUtil.getLongFormatDate(displaySTime),
@@ -72,7 +72,7 @@ public class MySessionViewModel extends BaseObservable implements ViewModel {
     }
 
     public void onItemClick(@SuppressWarnings("unused") View view) {
-        navigator.navigateToSessionDetail(mySession.session, MySessionsActivity.class);
+        navigator.navigateToSessionDetail(mySession.getSession(), MySessionsActivity.class);
     }
 
 }
