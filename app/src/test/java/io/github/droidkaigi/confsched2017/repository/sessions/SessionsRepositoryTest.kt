@@ -1,23 +1,12 @@
 package io.github.droidkaigi.confsched2017.repository.sessions
 
-import com.sys1yagi.kmockito.invoked
 import com.sys1yagi.kmockito.mock
-import com.sys1yagi.kmockito.verify
 import com.taroid.knit.should
-import io.github.droidkaigi.confsched2017.api.DroidKaigiClient
-import io.github.droidkaigi.confsched2017.model.OrmaDatabase
-import io.github.droidkaigi.confsched2017.model.Session
 import io.github.droidkaigi.confsched2017.repository.OrmaHolder
 import io.github.droidkaigi.confsched2017.util.DummyCreator
-import io.reactivex.Completable
-import io.reactivex.Single
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
-import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 class SessionsRepositoryTest {
