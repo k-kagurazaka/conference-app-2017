@@ -6,11 +6,9 @@ import com.tomoima.debot.DebotConfigurator;
 import com.tomoima.debot.DebotStrategyBuilder;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.multidex.MultiDex;
 
 import javax.inject.Inject;
 
@@ -80,11 +78,6 @@ public class MainApplication extends Application {
             startService(new Intent(this, DebugOverlayService.class));
         }
         initDebot();
-    }
-
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
     }
 
     private void initCalligraphy() {
