@@ -7,24 +7,20 @@ import com.sys1yagi.kmockito.verify
 import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.Sponsor
 import io.github.droidkaigi.confsched2017.model.Sponsorship
-import io.github.droidkaigi.confsched2017.util.RxTestSchedulerRule
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
 import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.After
 import org.junit.Before
-import org.junit.ClassRule
 import org.junit.Test
 import org.mockito.Mockito.never
 
 class SponsorshipsViewModelTest {
 
-    companion object {
-        @ClassRule
-        @JvmField
-        val schedulerRule = RxTestSchedulerRule
+    private companion object {
 
-        private val EXPECTED_SPONSORSHIPS = listOf(
+        val EXPECTED_SPONSORSHIPS = listOf(
                 Sponsorship(
                         category = "Category A",
                         sponsors = listOf(
@@ -40,7 +36,7 @@ class SponsorshipsViewModelTest {
                 )
         )
 
-        private fun createDummySponsor(name: String) = Sponsor(
+        fun createDummySponsor(name: String) = Sponsor(
                 imageUrl = "imageUrl_$name",
                 url = "url_$name"
         )
@@ -59,7 +55,7 @@ class SponsorshipsViewModelTest {
     @Before
     fun setUp() {
         navigator = mock<Navigator>()
-        viewModel = SponsorshipsViewModel(resourceResolver, navigator, CompositeDisposable())
+        viewModel = SponsorshipsViewModel(resourceResolver, navigator, Job())
     }
 
     @After
@@ -69,18 +65,16 @@ class SponsorshipsViewModelTest {
 
     @Test
     @Throws(Exception::class)
-    fun start() {
-        viewModel.start()
-        schedulerRule.testScheduler.triggerActions()
+    fun start() = runBlocking {
+        viewModel.start().join()
 
         assertSponsorShipEq(viewModel.sponsorShipViewModels, EXPECTED_SPONSORSHIPS)
     }
 
     @Test
     @Throws(Exception::class)
-    fun onSponsorClick() {
-        viewModel.start()
-        schedulerRule.testScheduler.triggerActions()
+    fun onSponsorClick() = runBlocking {
+        viewModel.start().join()
 
         val targetSponsor = viewModel.sponsorShipViewModels[0].sponsorViewModels[0]
 
