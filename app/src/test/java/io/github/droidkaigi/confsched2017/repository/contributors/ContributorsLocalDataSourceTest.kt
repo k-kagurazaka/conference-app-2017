@@ -2,63 +2,53 @@ package io.github.droidkaigi.confsched2017.repository.contributors
 
 import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.Contributor
-import io.github.droidkaigi.confsched2017.model.OrmaDatabase
-import io.github.droidkaigi.confsched2017.util.RxTestSchedulerRule
+import io.github.droidkaigi.confsched2017.repository.OrmaHolder
+import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.withTimeout
 import org.junit.Before
-import org.junit.ClassRule
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 class ContributorsLocalDataSourceTest {
 
-    companion object {
-        @ClassRule
-        @JvmField
-        val schedulerRule = RxTestSchedulerRule
-    }
-
-    private lateinit var ormaDatabase: OrmaDatabase
+    private lateinit var orma: OrmaHolder
 
     @Before
     fun setUp() {
-        ormaDatabase = OrmaDatabase.builder(RuntimeEnvironment.application).name(null).build()
+        orma = OrmaHolder()
     }
 
     @Test
-    fun findAllWhenEmpty() {
-        ContributorsLocalDataSource(ormaDatabase).findAll().test().run {
-            await(10, TimeUnit.SECONDS).should be true
-            assertNoErrors()
-            assertValue(listOf())
+    fun findAllWhenEmpty() = runBlocking {
+        withTimeout(10, TimeUnit.SECONDS) {
+            val contributors = ContributorsLocalDataSource(orma).findAll(context).await()
+            contributors.isEmpty().should be true
         }
     }
 
     @Test
-    fun findAllWhenNotEmpty() {
-        ormaDatabase.apply {
+    fun findAllWhenNotEmpty() = runBlocking {
+        orma.database.apply {
             insertIntoContributor(Contributor(
                     name = "Alice",
                     contributions = 10
             ))
-        }.let(::ContributorsLocalDataSource).findAll().test().run {
-            await(10, TimeUnit.SECONDS).should be true
-            assertNoErrors()
-            assertValueCount(1)
-            values()[0].size.should be 1
-            values()[0][0].name.should be "Alice"
-            values()[0][0].contributions.should be 10
+        }
+
+        withTimeout(10, TimeUnit.SECONDS) {
+            val contributors = ContributorsLocalDataSource(orma).findAll(context).await()
+            contributors.size.should be 1
+            contributors[0].name.should be "Alice"
+            contributors[0].contributions.should be 10
         }
     }
 
     @Test
-    @Ignore("unstable test :(")
-    fun updateAllAsyncAsInsert() {
-        ContributorsLocalDataSource(ormaDatabase).updateAllAsync(listOf(
+    fun updateAllAsyncAsInsert() = runBlocking {
+        ContributorsLocalDataSource(orma).updateAllAsync(listOf(
                 Contributor(
                         name = "Alice",
                         contributions = 10
@@ -66,32 +56,31 @@ class ContributorsLocalDataSourceTest {
                 Contributor(
                         name = "Bob",
                         contributions = 20
-                )))
-        schedulerRule.testScheduler.triggerActions()
+                ))).join()
 
-        ormaDatabase.selectFromContributor().toList().run {
+        orma.database.selectFromContributor().toList().run {
             size.should be 2
             this[1].name.should be "Bob"
         }
     }
 
-    @Ignore
     @Test
-    fun updateAllAsyncAsUpdate() {
-        ormaDatabase.apply {
+    fun updateAllAsyncAsUpdate() = runBlocking {
+        orma.database.apply {
             insertIntoContributor(Contributor(
                     name = "Alice",
                     contributions = 10
             ))
-        }.let(::ContributorsLocalDataSource).updateAllAsync(listOf(
+        }
+
+        ContributorsLocalDataSource(orma).updateAllAsync(listOf(
                 Contributor(
                         name = "Alice",
                         contributions = 100
                 )
-        ))
-        schedulerRule.testScheduler.triggerActions()
+        )).join()
 
-        ormaDatabase.selectFromContributor().toList().run {
+        orma.database.selectFromContributor().toList().run {
             size.should be 1
             this[0].contributions.should be 100
         }

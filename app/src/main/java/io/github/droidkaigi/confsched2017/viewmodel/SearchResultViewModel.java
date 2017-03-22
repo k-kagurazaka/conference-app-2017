@@ -56,7 +56,7 @@ public class SearchResultViewModel extends BaseObservable implements ViewModel {
         this.shouldEllipsis = type == Type.DESCRIPTION;
         this.session = session;
         this.textAppearanceSpan = new TextAppearanceSpan(context, R.style.SearchResultAppearance);
-        this.isMySession = mySessionsRepository.isExist(session.getId());
+        this.isMySession = mySessionsRepository.exists(session.getId());
     }
 
     @Override

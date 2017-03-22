@@ -7,25 +7,22 @@ import com.sys1yagi.kmockito.verify
 import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.Contributor
 import io.github.droidkaigi.confsched2017.repository.contributors.ContributorsRepository
-import io.github.droidkaigi.confsched2017.util.RxTestSchedulerRule
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
 import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.After
 import org.junit.Before
-import org.junit.ClassRule
 import org.junit.Test
 import org.mockito.Mockito.never
 
 class ContributorsViewModelTest {
 
-    companion object {
-        @ClassRule
-        @JvmField
-        val schedulerRule = RxTestSchedulerRule
-
-        private val EXPECTED_CONTRIBUTORS = listOf(
+    private companion object {
+        val EXPECTED_CONTRIBUTORS = listOf(
                 Contributor(
                         name = "Alice",
                         htmlUrl = "AliceUrl",
@@ -50,19 +47,19 @@ class ContributorsViewModelTest {
 
     private val toolbarViewModel = mock<ToolbarViewModel>()
 
-    private val repository = mock<ContributorsRepository>().apply {
-        findAll().invoked.thenReturn(Single.just(EXPECTED_CONTRIBUTORS))
-    }
+    private val repository = mock<ContributorsRepository>()
 
     private lateinit var navigator: Navigator
 
     private lateinit var viewModel: ContributorsViewModel
 
     @Before
-    fun setUp() {
+    fun setUp() = runBlocking {
+        val expected = async(context) { EXPECTED_CONTRIBUTORS}.apply { await() }
+        repository.findAll(any()).invoked.thenReturn(expected)
         navigator = mock<Navigator>()
         viewModel = ContributorsViewModel(
-                resourceResolver, navigator, toolbarViewModel, repository, CompositeDisposable())
+                resourceResolver, navigator, toolbarViewModel, repository, Job())
     }
 
     @After
@@ -72,9 +69,8 @@ class ContributorsViewModelTest {
 
     @Test
     @Throws(Exception::class)
-    fun start() {
-        viewModel.start()
-        schedulerRule.testScheduler.triggerActions()
+    fun start() = runBlocking {
+        viewModel.start().join()
 
         assertEq(viewModel.contributorViewModels, EXPECTED_CONTRIBUTORS)
         viewModel.loadingVisibility.should be 8 // GONE
@@ -84,9 +80,8 @@ class ContributorsViewModelTest {
 
     @Test
     @Throws(Exception::class)
-    fun onSwipeRefresh() {
-        viewModel.onSwipeRefresh()
-        schedulerRule.testScheduler.triggerActions()
+    fun onSwipeRefresh() = runBlocking {
+        viewModel.onSwipeRefresh().join()
 
         assertEq(viewModel.contributorViewModels, EXPECTED_CONTRIBUTORS)
         viewModel.loadingVisibility.should be 8 // GONE
@@ -96,9 +91,8 @@ class ContributorsViewModelTest {
 
     @Test
     @Throws(Exception::class)
-    fun onContributorClick() {
-        viewModel.start()
-        schedulerRule.testScheduler.triggerActions()
+    fun onContributorClick() = runBlocking {
+        viewModel.start().join()
 
         navigator.verify(never()).navigateToWebPage(any())
         viewModel.contributorViewModels[0].onClickContributor(null)

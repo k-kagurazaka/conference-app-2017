@@ -9,6 +9,7 @@ import android.view.View;
 import javax.inject.Inject;
 
 import io.github.droidkaigi.confsched2017.pref.DefaultPrefs;
+import io.github.droidkaigi.confsched2017.pref.DefaultPrefsHolder;
 import io.github.droidkaigi.confsched2017.util.LocaleUtil;
 
 public final class SettingsViewModel extends BaseObservable implements ViewModel {
@@ -18,8 +19,8 @@ public final class SettingsViewModel extends BaseObservable implements ViewModel
     private final DefaultPrefs defaultPrefs;
 
     @Inject
-    SettingsViewModel(DefaultPrefs defaultPrefs) {
-        this.defaultPrefs = defaultPrefs;
+    SettingsViewModel(DefaultPrefsHolder defaultPrefs) {
+        this.defaultPrefs = defaultPrefs.getPrefs();
     }
 
     public void setCallback(@NonNull Callback callback) {
@@ -77,8 +78,9 @@ public final class SettingsViewModel extends BaseObservable implements ViewModel
 
     public void onCheckedDebugOverlayView(boolean isChecked) {
         defaultPrefs.putShowDebugOverlayView(isChecked);
-        if (callback == null)
+        if (callback == null) {
             return;
+        }
         callback.debugOverlayViewEnabled(isChecked);
     }
 

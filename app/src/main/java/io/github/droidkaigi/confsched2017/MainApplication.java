@@ -25,6 +25,7 @@ import io.github.droidkaigi.confsched2017.log.CrashLogTree;
 import io.github.droidkaigi.confsched2017.log.LogEmitter;
 import io.github.droidkaigi.confsched2017.log.OverlayLogTree;
 import io.github.droidkaigi.confsched2017.pref.DefaultPrefs;
+import io.github.droidkaigi.confsched2017.pref.DefaultPrefsHolder;
 import io.github.droidkaigi.confsched2017.service.DebugOverlayService;
 import io.github.droidkaigi.confsched2017.util.AppShortcutsUtil;
 import io.github.droidkaigi.confsched2017.util.LocaleUtil;
@@ -45,7 +46,7 @@ public class MainApplication extends Application {
     ShowSplashStrategy showSplashStrategy;
 
     @Inject
-    DefaultPrefs defaultPrefs;
+    DefaultPrefsHolder defaultPrefs;
 
     @Inject
     LogEmitter emitter;
@@ -75,7 +76,7 @@ public class MainApplication extends Application {
         Timber.plant(new OverlayLogTree(emitter));
         LocaleUtil.initLocale(this);
 
-        if (defaultPrefs.getShowDebugOverlayView()) {
+        if (defaultPrefs.getPrefs().getShowDebugOverlayView()) {
             startService(new Intent(this, DebugOverlayService.class));
         }
         initDebot();

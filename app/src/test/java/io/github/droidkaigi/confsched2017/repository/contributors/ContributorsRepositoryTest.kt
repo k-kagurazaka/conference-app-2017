@@ -1,13 +1,15 @@
 package io.github.droidkaigi.confsched2017.repository.contributors
 
+import com.sys1yagi.kmockito.any
 import com.sys1yagi.kmockito.invoked
 import com.sys1yagi.kmockito.mock
 import com.sys1yagi.kmockito.verify
+import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.Contributor
-import io.reactivex.Single
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
 import org.mockito.Mockito.never
-import org.mockito.Mockito.times
 
 class ContributorsRepositoryTest {
 
@@ -35,65 +37,65 @@ class ContributorsRepositoryTest {
 
     @Test
     @Throws(Exception::class)
-    fun findAllFromEmptyRepository() {
-        localDataSource.findAll().invoked.thenReturn(Single.just(listOf()))
-        remoteDataSource.findAll().invoked.thenReturn(Single.just(listOf()))
-        repository.findAll().test().assertOf { check ->
-            check.assertNoErrors()
-            check.assertValue(listOf())
-        }
+    fun findAllFromEmptyRepository() = runBlocking {
+        val expected = async(context) { listOf<Contributor>() }.apply { await() }
+        localDataSource.findAll(any()).invoked.thenReturn(expected)
+        remoteDataSource.findAll(any()).invoked.thenReturn(expected)
+        val contributors = repository.findAll(context).await()
+        contributors.isEmpty().should be true
     }
 
     @Test
     @Throws(Exception::class)
-    fun updateLocalWhenRemoteReturns() {
-        localDataSource.findAll().invoked.thenReturn(Single.just(listOf()))
-        remoteDataSource.findAll().invoked.thenReturn(Single.just(CONTRIBUTORS))
-        repository.findAll().test().assertOf { check ->
-            check.assertNoErrors()
-            localDataSource.verify(times(1)).updateAllAsync(CONTRIBUTORS)
-        }
+    fun updateLocalWhenRemoteReturns() = runBlocking {
+        val empty = async(context) { listOf<Contributor>() }.apply { await() }
+        val expected = async(context) { CONTRIBUTORS }.apply { await() }
+        localDataSource.findAll(any()).invoked.thenReturn(empty)
+        remoteDataSource.findAll(any()).invoked.thenReturn(expected)
+        repository.findAll(context).await()
+        localDataSource.verify().updateAllAsync(CONTRIBUTORS)
     }
 
     @Test
     @Throws(Exception::class)
-    fun returnCache() {
-        localDataSource.findAll().invoked.thenReturn(Single.just(listOf()))
-        remoteDataSource.findAll().invoked.thenReturn(Single.just(CONTRIBUTORS))
+    fun returnCache() = runBlocking {
+        val empty = async(context) { listOf<Contributor>() }.apply { await() }
+        val expected = async(context) { CONTRIBUTORS }.apply { await() }
+        localDataSource.findAll(any()).invoked.thenReturn(empty)
+        remoteDataSource.findAll(any()).invoked.thenReturn(expected)
 
-        repository.findAll().flatMap { repository.findAll() }.test().run {
-            assertNoErrors()
-            localDataSource.verify(never()).findAll()
-            remoteDataSource.verify(times(1)).findAll()
-        }
+        repository.findAll(context).await()
+        repository.findAll(context).await()
+        localDataSource.verify(never()).findAll(any())
+        remoteDataSource.verify().findAll(any())
     }
 
     @Test
     @Throws(Exception::class)
-    fun findAllFromLocalDataSourceWhenNotDirty() {
-        localDataSource.findAll().invoked.thenReturn(Single.just(CONTRIBUTORS))
-        remoteDataSource.findAll().invoked.thenReturn(Single.just(listOf()))
+    fun findAllFromLocalDataSourceWhenNotDirty() = runBlocking {
+        val empty = async(context) { listOf<Contributor>() }.apply { await() }
+        val expected = async(context) { CONTRIBUTORS }.apply { await() }
+        localDataSource.findAll(any()).invoked.thenReturn(expected)
+        remoteDataSource.findAll(any()).invoked.thenReturn(empty)
         repository.setDirty(false)
 
-        repository.findAll().test().run {
-            assertNoErrors()
-            localDataSource.verify(times(1)).findAll()
-            remoteDataSource.verify(never()).findAll()
-        }
+        repository.findAll(context).await()
+        localDataSource.verify().findAll(any())
+        remoteDataSource.verify(never()).findAll(any())
     }
 
     @Test
     @Throws(Exception::class)
-    fun findAllFromRemoteDataSourceWhenLocalDataSourceReturnsEmptyResult() {
-        localDataSource.findAll().invoked.thenReturn(Single.just(listOf()))
-        remoteDataSource.findAll().invoked.thenReturn(Single.just(CONTRIBUTORS))
+    fun findAllFromRemoteDataSourceWhenLocalDataSourceReturnsEmptyResult() = runBlocking {
+        val empty = async(context) { listOf<Contributor>() }.apply { await() }
+        val expected = async(context) { CONTRIBUTORS }.apply { await() }
+        localDataSource.findAll(any()).invoked.thenReturn(empty)
+        remoteDataSource.findAll(any()).invoked.thenReturn(expected)
         repository.setDirty(false)
 
-        repository.findAll().test().run {
-            assertNoErrors()
-            localDataSource.verify(times(1)).findAll()
-            remoteDataSource.verify(times(1)).findAll()
-        }
+        repository.findAll(context).await()
+        localDataSource.verify().findAll(any())
+        remoteDataSource.verify().findAll(any())
     }
 
 }

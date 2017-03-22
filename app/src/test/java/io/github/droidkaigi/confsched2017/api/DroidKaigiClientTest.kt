@@ -3,13 +3,14 @@ package io.github.droidkaigi.confsched2017.api
 import com.sys1yagi.kmockito.invoked
 import com.sys1yagi.kmockito.mock
 import com.sys1yagi.kmockito.verify
+import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.api.service.DroidKaigiService
 import io.github.droidkaigi.confsched2017.api.service.GithubService
 import io.github.droidkaigi.confsched2017.api.service.GoogleFormService
 import io.github.droidkaigi.confsched2017.util.DummyCreator
-import io.reactivex.Single
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
-import org.mockito.Mockito
+import retrofit2.mock.Calls
 import java.util.*
 
 class DroidKaigiClientTest {
@@ -24,38 +25,34 @@ class DroidKaigiClientTest {
 
     @Test
     @Throws(Exception::class)
-    fun getSessions() {
+    fun getSessions() = runBlocking<Unit> {
         val expected = Array(10) { DummyCreator.newSession(it) }.toList()
-        droidKaigiService.sessionsJa.invoked.thenReturn(Single.just(expected))
-        droidKaigiService.sessionsEn.invoked.thenReturn(Single.just(expected))
+        droidKaigiService.getSessionsJa().invoked.thenReturn(Calls.response(expected))
+        droidKaigiService.getSessionsEn().invoked.thenReturn(Calls.response(expected))
 
-        client.getSessions(Locale.JAPANESE).test().run {
-            assertNoErrors()
-            assertResult(expected)
-            assertComplete()
+        run {
+            val sessions = client.getSessions(context, Locale.JAPANESE).await()
+            sessions.should be expected
         }
 
-        client.getSessions(Locale.ENGLISH).test().run {
-            assertNoErrors()
-            assertResult(expected)
-            assertComplete()
+        run {
+            val sessions = client.getSessions(context, Locale.ENGLISH).await()
+            sessions.should be expected
         }
-        droidKaigiService.verify(Mockito.times(1)).sessionsJa
-        droidKaigiService.verify(Mockito.times(1)).sessionsEn
+
+        droidKaigiService.verify().getSessionsJa()
+        droidKaigiService.verify().getSessionsEn()
     }
 
     @Test
     @Throws(Exception::class)
-    fun getContributors() {
+    fun getContributors() = runBlocking<Unit> {
         val expected = Array(10) { DummyCreator.newContributor(it) }.toList()
         githubService.getContributors("DroidKaigi", "conference-app-2017", 1, 100)
-                .invoked.thenReturn(Single.just(expected))
+                .invoked.thenReturn(Calls.response(expected))
 
-        client.contributors.test().run {
-            assertNoErrors()
-            assertResult(expected)
-            assertComplete()
-        }
+        val contributors = client.getContributors(context).await()
+        contributors.should be expected
     }
 
 }
