@@ -1,62 +1,79 @@
 package io.github.droidkaigi.confsched2017.repository.sessions
 
-import com.sys1yagi.kmockito.any
-import com.sys1yagi.kmockito.invoked
-import com.sys1yagi.kmockito.mock
-import com.sys1yagi.kmockito.verify
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.MySession
 import io.github.droidkaigi.confsched2017.util.DummyCreator
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
+import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
 class MySessionsRepositoryTest {
 
-    private val localDataSource = mock<MySessionsLocalDataSource>()
-    private val repository = MySessionsRepository(localDataSource)
+    private lateinit var completedJob: Job
 
-    @Test
-    @Throws(Exception::class)
-    fun findAll() = runBlocking {
-        val expected = async(context) { List(10) { i -> DummyCreator.newMySession(i) } }.apply { await() }
-        localDataSource.findAll(any()).invoked.thenReturn(expected)
-
-        val mySessions = repository.findAll(context).await()
-        mySessions.should be expected.await()
-        localDataSource.verify().findAll(any())
-
-        // check if found sessions are cached
-        repository.findAll(context).await()
-        localDataSource.verify().findAll(any())
+    @Before
+    fun setUp() = runBlocking {
+        completedJob = launch(context) {}.apply { join() }
     }
 
     @Test
     @Throws(Exception::class)
-    fun save() = runBlocking {
+    fun findAll(): Unit = runBlocking<Unit> {
+        val expected = async(context) { List(10) { i -> DummyCreator.newMySession(i) } }.apply { await() }
+        val localDataSource = mock<MySessionsLocalDataSource> {
+            on { findAll(any()) } doReturn expected
+        }
+        val repository = MySessionsRepository(localDataSource)
+
+        val mySessions = repository.findAll(context).await()
+        mySessions.should be expected.await()
+        verify(localDataSource).findAll(any())
+
+        // check if found sessions are cached
+        repository.findAll(context).await()
+        verify(localDataSource).findAll(any())
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun save(): Unit = runBlocking<Unit> {
+        val localDataSource = mock<MySessionsLocalDataSource> {
+            on { save(any(), any()) } doReturn completedJob
+        }
+        val repository = MySessionsRepository(localDataSource)
+
         val session = DummyCreator.newSession(1)
-        localDataSource.save(context, session).invoked.thenReturn(Job())
         repository.save(context, session).join()
 
         // check if session is cached
         val mySessions = repository.findAll(context).await()
         mySessions.should be listOf(MySession(session = session))
-        localDataSource.verify(Mockito.never()).findAll(any())
+        verify(localDataSource, Mockito.never()).findAll(any())
     }
 
     @Test
     @Throws(Exception::class)
-    fun delete() = runBlocking {
+    fun delete(): Unit = runBlocking {
+        val localDataSource = mock<MySessionsLocalDataSource> {
+            on { save(any(), any()) } doReturn completedJob
+            on { delete(any(), any()) } doReturn completedJob
+        }
+        val repository = MySessionsRepository(localDataSource)
+
         val session1 = DummyCreator.newSession(1)
         val session2 = DummyCreator.newSession(2)
 
         // ready caches
         repository.save(context, session1).join()
         repository.save(context, session2).join()
-
-        localDataSource.delete(context, session1).invoked.thenReturn(Job())
         repository.delete(context, session1).join()
 
         // check if cached session1 is deleted
@@ -67,11 +84,14 @@ class MySessionsRepositoryTest {
     @Test
     @Throws(Exception::class)
     fun isExist() {
-        localDataSource.exists(1).invoked.thenReturn(false)
-        repository.exists(1).should be false
+        val localDataSource = mock<MySessionsLocalDataSource> {
+            on { exists(1) } doReturn false
+            on { exists(2) } doReturn true
+        }
+        val repository = MySessionsRepository(localDataSource)
 
-        localDataSource.exists(1).invoked.thenReturn(true)
-        repository.exists(1).should be true
+        repository.exists(1).should be false
+        repository.exists(2).should be true
     }
 
 }

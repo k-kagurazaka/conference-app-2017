@@ -5,8 +5,13 @@ import io.github.droidkaigi.confsched2017.model.OrmaDatabase
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class OrmaHolder @Inject constructor(context: Context) {
+interface OrmaHolder {
 
-    val database: OrmaDatabase = OrmaDatabase.builder(context).build()
+    val database: OrmaDatabase
+}
+
+@Singleton
+class OrmaHolderImpl @Inject constructor(context: Context) : OrmaHolder {
+
+    override val database: OrmaDatabase = OrmaDatabase.builder(context).build()
 }

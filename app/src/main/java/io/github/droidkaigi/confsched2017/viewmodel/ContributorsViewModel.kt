@@ -12,8 +12,8 @@ import io.github.droidkaigi.confsched2017.di.scope.FragmentScope
 import io.github.droidkaigi.confsched2017.repository.contributors.ContributorsRepository
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
 import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
+import io.github.droidkaigi.confsched2017.util.ThreadDispatcher
 import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.UI
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,6 +23,7 @@ class ContributorsViewModel @Inject constructor(
         private val navigator: Navigator,
         private val toolbarViewModel: ToolbarViewModel,
         private val contributorsRepository: ContributorsRepository,
+        private val dispatcher: ThreadDispatcher,
         private val cancellation: Job
 ) : BaseObservable(), ViewModel {
 
@@ -65,7 +66,7 @@ class ContributorsViewModel @Inject constructor(
         navigator.navigateToWebPage("https://github.com/DroidKaigi/conference-app-2017")
     }
 
-    private fun loadContributors(refresh: Boolean): Job = launch(UI) {
+    private fun loadContributors(refresh: Boolean): Job = dispatcher.asyncUI {
         if (refresh) {
             contributorsRepository.setDirty(true)
         } else {

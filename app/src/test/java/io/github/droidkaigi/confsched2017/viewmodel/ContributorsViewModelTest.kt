@@ -7,10 +7,9 @@ import com.sys1yagi.kmockito.verify
 import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.Contributor
 import io.github.droidkaigi.confsched2017.repository.contributors.ContributorsRepository
+import io.github.droidkaigi.confsched2017.util.TestThreadDispatcher
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
 import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
@@ -55,11 +54,11 @@ class ContributorsViewModelTest {
 
     @Before
     fun setUp() = runBlocking {
-        val expected = async(context) { EXPECTED_CONTRIBUTORS}.apply { await() }
+        val expected = async(context) { EXPECTED_CONTRIBUTORS }.apply { await() }
         repository.findAll(any()).invoked.thenReturn(expected)
         navigator = mock<Navigator>()
         viewModel = ContributorsViewModel(
-                resourceResolver, navigator, toolbarViewModel, repository, Job())
+                resourceResolver, navigator, toolbarViewModel, repository, TestThreadDispatcher, Job())
     }
 
     @After

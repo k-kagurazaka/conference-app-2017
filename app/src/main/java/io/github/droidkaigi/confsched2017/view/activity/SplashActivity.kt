@@ -9,13 +9,19 @@ import io.github.droidkaigi.confsched2017.databinding.ActivitySplashBinding
 import io.github.droidkaigi.confsched2017.repository.sessions.MySessionsRepository
 import io.github.droidkaigi.confsched2017.repository.sessions.SessionsRepository
 import io.github.droidkaigi.confsched2017.util.FpsMeasureUtil
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.UI
+import io.github.droidkaigi.confsched2017.util.ThreadDispatcher
+import kotlinx.coroutines.experimental.CancellationException
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.delay
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
 class SplashActivity : BaseActivity() {
+
+    @Inject
+    internal lateinit var dispatcher: ThreadDispatcher
 
     @Inject
     internal lateinit var cancellation: Job
@@ -53,7 +59,7 @@ class SplashActivity : BaseActivity() {
         FpsMeasureUtil.finish()
     }
 
-    private fun loadSessionsForCache() = launch(UI) {
+    private fun loadSessionsForCache(): Job = dispatcher.asyncUI {
         val threadPool = CommonPool + cancellation
 
         try {
@@ -75,7 +81,7 @@ class SplashActivity : BaseActivity() {
             Timber.tag(TAG).e(e, "Failed to load sessions.")
         }
 
-        if (isFinishing) return@launch
+        if (isFinishing) return@asyncUI
         startActivity(MainActivity.createIntent(this@SplashActivity))
         this@SplashActivity.finish()
     }

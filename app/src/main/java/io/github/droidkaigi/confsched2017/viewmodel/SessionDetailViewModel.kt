@@ -13,7 +13,7 @@ import io.github.droidkaigi.confsched2017.repository.sessions.SessionsRepository
 import io.github.droidkaigi.confsched2017.util.AlarmUtil
 import io.github.droidkaigi.confsched2017.util.DateUtil
 import io.github.droidkaigi.confsched2017.util.LocaleUtil
-import io.github.droidkaigi.confsched2017.util.asyncUI
+import io.github.droidkaigi.confsched2017.util.ThreadDispatcher
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -27,7 +27,8 @@ class SessionDetailViewModel @Inject constructor(
         private val context: Context,
         private val navigator: Navigator,
         private val sessionsRepository: SessionsRepository,
-        private val mySessionsRepository: MySessionsRepository
+        private val mySessionsRepository: MySessionsRepository,
+        private val dispatcher: ThreadDispatcher
 ) : BaseObservable(), ViewModel {
 
     var sessionTitle: String? = null
@@ -110,7 +111,7 @@ class SessionDetailViewModel @Inject constructor(
         // TODO
     }
 
-    fun onClickFab(@Suppress("UNUSED_PARAMETER") view: View) = asyncUI {
+    fun onClickFab(@Suppress("UNUSED_PARAMETER") view: View) = dispatcher.launchUI {
         session?.let {
             val selected = if (mySessionsRepository.exists(it.id)) {
                 try {

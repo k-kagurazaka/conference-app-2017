@@ -3,6 +3,8 @@ package io.github.droidkaigi.confsched2017.repository.contributors
 import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.Contributor
 import io.github.droidkaigi.confsched2017.repository.OrmaHolder
+import io.github.droidkaigi.confsched2017.repository.OrmaHolderImpl
+import io.github.droidkaigi.confsched2017.repository.TestOrmaHolder
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withTimeout
 import org.junit.Before
@@ -18,7 +20,7 @@ class ContributorsLocalDataSourceTest {
 
     @Before
     fun setUp() {
-        orma = OrmaHolder()
+        orma = TestOrmaHolder()
     }
 
     @Test

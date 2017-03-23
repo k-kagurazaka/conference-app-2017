@@ -16,7 +16,7 @@ class MySessionsRepository @Inject constructor(
         private val localDataSource: MySessionsLocalDataSource
 ) : MySessionsDataSource {
 
-    private var cachedMySessions: MutableMap<Int, MySession> = LinkedHashMap()
+    private val cachedMySessions: MutableMap<Int, MySession> = LinkedHashMap()
 
     override fun findAll(coroutineContext: CoroutineContext): Deferred<List<MySession>> = async(coroutineContext) {
         if (cachedMySessions.isNotEmpty()) {
@@ -38,9 +38,7 @@ class MySessionsRepository @Inject constructor(
         localDataSource.delete(context, session).join()
     }
 
-    override fun exists(sessionId: Int): Boolean {
-        return localDataSource.exists(sessionId)
-    }
+    override fun exists(sessionId: Int): Boolean = localDataSource.exists(sessionId)
 
     private fun refreshCache(mySessions: List<MySession>) {
         cachedMySessions.clear()

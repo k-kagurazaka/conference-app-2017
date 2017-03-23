@@ -7,22 +7,26 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.droidkaigi.confsched2017.R
 import io.github.droidkaigi.confsched2017.model.Sponsorship
+import io.github.droidkaigi.confsched2017.util.ThreadDispatcher
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
 import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.CancellationException
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.async
 import timber.log.Timber
 import javax.inject.Inject
 
 class SponsorshipsViewModel @Inject constructor(
         private val resourceResolver: ResourceResolver,
         private val navigator: Navigator,
+        private val dispatcher: ThreadDispatcher,
         private var cancellation: Job
 ) : BaseObservable(), ViewModel {
 
     val sponsorShipViewModels: ObservableList<SponsorshipViewModel> = ObservableArrayList()
 
-    fun start(): Job = launch(UI) {
+    fun start(): Job = dispatcher.asyncUI {
         try {
             val viewModels = async(CommonPool + cancellation) {
                 val json = resourceResolver.loadJSONFromAsset(resourceResolver.getString(R.string.sponsors_file))

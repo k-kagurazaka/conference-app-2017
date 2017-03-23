@@ -1,6 +1,7 @@
 package io.github.droidkaigi.confsched2017.repository.contributors
 
 import io.github.droidkaigi.confsched2017.model.Contributor
+import io.github.droidkaigi.confsched2017.util.Mockable
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import java.util.*
@@ -8,6 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.experimental.CoroutineContext
 
+@Mockable
 @Singleton
 class ContributorsRepository @Inject constructor(
         private val localDataSource: ContributorsLocalDataSource,

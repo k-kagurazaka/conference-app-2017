@@ -2,7 +2,8 @@ package io.github.droidkaigi.confsched2017.repository.sessions
 
 import com.sys1yagi.kmockito.mock
 import com.taroid.knit.should
-import io.github.droidkaigi.confsched2017.repository.OrmaHolder
+import io.github.droidkaigi.confsched2017.repository.OrmaHolderImpl
+import io.github.droidkaigi.confsched2017.repository.TestOrmaHolder
 import io.github.droidkaigi.confsched2017.util.DummyCreator
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,7 +17,7 @@ class SessionsRepositoryTest {
         // false. cache is null.
         run {
             val repository = SessionsRepository(
-                    SessionsLocalDataSource(OrmaHolder()),
+                    SessionsLocalDataSource(TestOrmaHolder()),
                     SessionsRemoteDataSource(mock())
             )
 
@@ -26,7 +27,7 @@ class SessionsRepositoryTest {
         // false. repository has any cached session, but repository is dirty.
         run {
             val repository = SessionsRepository(
-                    SessionsLocalDataSource(OrmaHolder()),
+                    SessionsLocalDataSource(TestOrmaHolder()),
                     SessionsRemoteDataSource(mock())
             )
             repository.cachedSessions = mutableMapOf(0 to createSession(0))
@@ -38,7 +39,7 @@ class SessionsRepositoryTest {
         // true.
         run {
             val repository = SessionsRepository(
-                    SessionsLocalDataSource(OrmaHolder()),
+                    SessionsLocalDataSource(TestOrmaHolder()),
                     SessionsRemoteDataSource(mock())
             )
             repository.cachedSessions = mutableMapOf(0 to createSession(0))

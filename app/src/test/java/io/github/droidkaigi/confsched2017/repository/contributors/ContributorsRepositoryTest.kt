@@ -37,7 +37,7 @@ class ContributorsRepositoryTest {
 
     @Test
     @Throws(Exception::class)
-    fun findAllFromEmptyRepository() = runBlocking {
+    fun findAllFromEmptyRepository(): Unit = runBlocking {
         val expected = async(context) { listOf<Contributor>() }.apply { await() }
         localDataSource.findAll(any()).invoked.thenReturn(expected)
         remoteDataSource.findAll(any()).invoked.thenReturn(expected)
@@ -47,7 +47,7 @@ class ContributorsRepositoryTest {
 
     @Test
     @Throws(Exception::class)
-    fun updateLocalWhenRemoteReturns() = runBlocking {
+    fun updateLocalWhenRemoteReturns(): Unit = runBlocking<Unit> {
         val empty = async(context) { listOf<Contributor>() }.apply { await() }
         val expected = async(context) { CONTRIBUTORS }.apply { await() }
         localDataSource.findAll(any()).invoked.thenReturn(empty)
@@ -58,7 +58,7 @@ class ContributorsRepositoryTest {
 
     @Test
     @Throws(Exception::class)
-    fun returnCache() = runBlocking {
+    fun returnCache(): Unit = runBlocking<Unit> {
         val empty = async(context) { listOf<Contributor>() }.apply { await() }
         val expected = async(context) { CONTRIBUTORS }.apply { await() }
         localDataSource.findAll(any()).invoked.thenReturn(empty)
@@ -72,7 +72,7 @@ class ContributorsRepositoryTest {
 
     @Test
     @Throws(Exception::class)
-    fun findAllFromLocalDataSourceWhenNotDirty() = runBlocking {
+    fun findAllFromLocalDataSourceWhenNotDirty(): Unit = runBlocking<Unit> {
         val empty = async(context) { listOf<Contributor>() }.apply { await() }
         val expected = async(context) { CONTRIBUTORS }.apply { await() }
         localDataSource.findAll(any()).invoked.thenReturn(expected)
@@ -86,7 +86,7 @@ class ContributorsRepositoryTest {
 
     @Test
     @Throws(Exception::class)
-    fun findAllFromRemoteDataSourceWhenLocalDataSourceReturnsEmptyResult() = runBlocking {
+    fun findAllFromRemoteDataSourceWhenLocalDataSourceReturnsEmptyResult(): Unit = runBlocking<Unit> {
         val empty = async(context) { listOf<Contributor>() }.apply { await() }
         val expected = async(context) { CONTRIBUTORS }.apply { await() }
         localDataSource.findAll(any()).invoked.thenReturn(empty)

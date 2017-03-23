@@ -9,10 +9,9 @@ import io.github.droidkaigi.confsched2017.model.Session
 import io.github.droidkaigi.confsched2017.model.SessionFeedback
 import io.github.droidkaigi.confsched2017.repository.feedbacks.SessionFeedbackRepository
 import io.github.droidkaigi.confsched2017.repository.sessions.SessionsRepository
-import io.github.droidkaigi.confsched2017.util.asyncUI
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
+import io.github.droidkaigi.confsched2017.util.ThreadDispatcher
 import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.UI
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -22,6 +21,7 @@ class SessionFeedbackViewModel @Inject internal constructor(
         private val sessionsRepository: SessionsRepository,
         private val sessionFeedbackRepository: SessionFeedbackRepository,
         private val navigator: Navigator,
+        private val dispatcher: ThreadDispatcher,
         private val cancellation: Job
 ) : BaseObservable(), ViewModel {
 
@@ -102,7 +102,7 @@ class SessionFeedbackViewModel @Inject internal constructor(
 
     private lateinit var sessionFeedback: SessionFeedback
 
-    fun findSession(sessionId: Int) = launch(UI) {
+    fun findSession(sessionId: Int): Job = dispatcher.asyncUI {
         try {
             val session = sessionsRepository.find(CommonPool + cancellation, sessionId, Locale.getDefault()).await()
             session?.let { initSessionFeedback(it) } ?: throw RuntimeException()
@@ -156,7 +156,7 @@ class SessionFeedbackViewModel @Inject internal constructor(
         }
     }
 
-    private fun submit(sessionFeedback: SessionFeedback) = asyncUI {
+    private fun submit(sessionFeedback: SessionFeedback) = dispatcher.launchUI {
         loadingVisibility = View.VISIBLE
         isSubmitButtonEnabled = false
 

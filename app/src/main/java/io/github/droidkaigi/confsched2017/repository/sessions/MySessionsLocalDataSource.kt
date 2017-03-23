@@ -4,6 +4,7 @@ import io.github.droidkaigi.confsched2017.model.MySession
 import io.github.droidkaigi.confsched2017.model.MySession_Relation
 import io.github.droidkaigi.confsched2017.model.Session
 import io.github.droidkaigi.confsched2017.repository.OrmaHolder
+import io.github.droidkaigi.confsched2017.util.Mockable
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.async
@@ -11,6 +12,7 @@ import kotlinx.coroutines.experimental.launch
 import javax.inject.Inject
 import kotlin.coroutines.experimental.CoroutineContext
 
+@Mockable
 class MySessionsLocalDataSource @Inject constructor(private val orma: OrmaHolder) : MySessionsDataSource {
 
 

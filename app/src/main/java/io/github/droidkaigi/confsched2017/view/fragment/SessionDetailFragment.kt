@@ -17,7 +17,7 @@ import com.sys1yagi.fragmentcreator.annotation.Args
 import com.sys1yagi.fragmentcreator.annotation.FragmentCreator
 import io.github.droidkaigi.confsched2017.R
 import io.github.droidkaigi.confsched2017.databinding.FragmentSessionDetailBinding
-import io.github.droidkaigi.confsched2017.util.asyncUI
+import io.github.droidkaigi.confsched2017.util.ThreadDispatcher
 import io.github.droidkaigi.confsched2017.view.helper.AnimationHelper
 import io.github.droidkaigi.confsched2017.viewmodel.SessionDetailViewModel
 import kotlinx.coroutines.experimental.CancellationException
@@ -28,6 +28,9 @@ import javax.inject.Inject
 
 @FragmentCreator
 class SessionDetailFragment : BaseFragment(), SessionDetailViewModel.Callback {
+
+    @Inject
+    internal lateinit var dispatcher: ThreadDispatcher
 
     @Inject
     internal lateinit var viewModel: SessionDetailViewModel
@@ -57,7 +60,7 @@ class SessionDetailFragment : BaseFragment(), SessionDetailViewModel.Callback {
         binding.viewModel = viewModel
         setHasOptionsMenu(true)
 
-        asyncUI {
+        dispatcher.launchUI {
             try {
                 viewModel.loadSession(CommonPool + cancellation, sessionId).join()
             } catch (e: CancellationException) {

@@ -11,7 +11,7 @@ import android.widget.Filterable
 import io.github.droidkaigi.confsched2017.R
 import io.github.droidkaigi.confsched2017.databinding.FragmentSearchBinding
 import io.github.droidkaigi.confsched2017.databinding.ViewSearchResultBinding
-import io.github.droidkaigi.confsched2017.util.asyncUI
+import io.github.droidkaigi.confsched2017.util.ThreadDispatcher
 import io.github.droidkaigi.confsched2017.view.customview.ArrayRecyclerAdapter
 import io.github.droidkaigi.confsched2017.view.customview.BindingHolder
 import io.github.droidkaigi.confsched2017.view.customview.itemdecoration.DividerItemDecoration
@@ -31,6 +31,9 @@ class SearchFragment : BaseFragment(), SearchViewModel.Callback {
 
     @Inject
     internal lateinit var cancellation: Job
+
+    @Inject
+    internal lateinit var dispatcher: ThreadDispatcher
 
     private lateinit var adapter: SearchResultsAdapter
 
@@ -119,7 +122,7 @@ class SearchFragment : BaseFragment(), SearchViewModel.Callback {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
     }
 
-    private fun loadData() = asyncUI {
+    private fun loadData() = dispatcher.launchUI {
         try {
             val context = this@SearchFragment.context
             val searchResults = viewModel.getSearchResultViewModels(CommonPool + cancellation, context).await()

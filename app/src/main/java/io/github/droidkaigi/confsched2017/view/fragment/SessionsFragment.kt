@@ -13,8 +13,8 @@ import io.github.droidkaigi.confsched2017.R
 import io.github.droidkaigi.confsched2017.databinding.FragmentSessionsBinding
 import io.github.droidkaigi.confsched2017.databinding.ViewSessionCellBinding
 import io.github.droidkaigi.confsched2017.model.Room
+import io.github.droidkaigi.confsched2017.util.ThreadDispatcher
 import io.github.droidkaigi.confsched2017.util.ViewUtil
-import io.github.droidkaigi.confsched2017.util.asyncUI
 import io.github.droidkaigi.confsched2017.view.activity.MySessionsActivity
 import io.github.droidkaigi.confsched2017.view.activity.SearchActivity
 import io.github.droidkaigi.confsched2017.view.customview.ArrayRecyclerAdapter
@@ -39,6 +39,9 @@ class SessionsFragment : BaseFragment() {
 
     @Inject
     internal lateinit var cancellation: Job
+
+    @Inject
+    internal lateinit var dispatcher: ThreadDispatcher
 
     private lateinit var adapter: SessionsAdapter
 
@@ -96,7 +99,7 @@ class SessionsFragment : BaseFragment() {
             return size.x
         }
 
-    private fun showSessions() = asyncUI {
+    private fun showSessions() = dispatcher.launchUI {
         try {
             val sessions = viewModel.getSessions(CommonPool + cancellation, Locale.getDefault(), this@SessionsFragment.context)
             renderSessions(sessions.await())

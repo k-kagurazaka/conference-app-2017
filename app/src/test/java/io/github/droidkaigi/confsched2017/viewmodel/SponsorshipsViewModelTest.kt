@@ -7,6 +7,7 @@ import com.sys1yagi.kmockito.verify
 import com.taroid.knit.should
 import io.github.droidkaigi.confsched2017.model.Sponsor
 import io.github.droidkaigi.confsched2017.model.Sponsorship
+import io.github.droidkaigi.confsched2017.util.TestThreadDispatcher
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
 import io.github.droidkaigi.confsched2017.view.helper.ResourceResolver
 import kotlinx.coroutines.experimental.Job
@@ -55,7 +56,7 @@ class SponsorshipsViewModelTest {
     @Before
     fun setUp() {
         navigator = mock<Navigator>()
-        viewModel = SponsorshipsViewModel(resourceResolver, navigator, Job())
+        viewModel = SponsorshipsViewModel(resourceResolver, navigator, TestThreadDispatcher, Job())
     }
 
     @After

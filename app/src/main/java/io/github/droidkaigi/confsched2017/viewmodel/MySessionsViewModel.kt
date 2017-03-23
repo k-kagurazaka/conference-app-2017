@@ -8,7 +8,7 @@ import android.databinding.ObservableList
 import android.view.View
 import io.github.droidkaigi.confsched2017.BR
 import io.github.droidkaigi.confsched2017.repository.sessions.MySessionsRepository
-import io.github.droidkaigi.confsched2017.util.asyncUI
+import io.github.droidkaigi.confsched2017.util.ThreadDispatcher
 import io.github.droidkaigi.confsched2017.view.helper.Navigator
 import kotlinx.coroutines.experimental.CancellationException
 import kotlinx.coroutines.experimental.CommonPool
@@ -19,6 +19,7 @@ import javax.inject.Inject
 class MySessionsViewModel @Inject internal constructor(
         private val navigator: Navigator,
         private val mySessionsRepository: MySessionsRepository,
+        private val dispatcher: ThreadDispatcher,
         private var cancellation: Job
 ) : BaseObservable(), ViewModel {
 
@@ -37,7 +38,7 @@ class MySessionsViewModel @Inject internal constructor(
         cancellation = Job()
     }
 
-    fun start(context: Context) = asyncUI {
+    fun start(context: Context) = dispatcher.launchUI {
         try {
             val viewModels = mySessionsRepository.findAll(CommonPool + cancellation)
                     .await()
